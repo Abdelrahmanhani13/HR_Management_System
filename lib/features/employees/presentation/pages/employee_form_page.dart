@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hr_management/core/error/failures.dart';
 import 'package:hr_management/core/router/app_routes.dart';
 import 'package:hr_management/core/router/navigation.dart';
 import 'package:hr_management/core/theme/app_spacing.dart';
@@ -9,7 +8,8 @@ import 'package:hr_management/core/utils/view_status.dart';
 import 'package:hr_management/core/widgets/app_card.dart';
 import 'package:hr_management/core/widgets/adaptive_grid.dart';
 import 'package:hr_management/core/widgets/content_frame.dart';
-import 'package:hr_management/core/widgets/feedback.dart';
+import 'package:hr_management/core/widgets/app_assets.dart';
+import 'package:hr_management/core/widgets/app_feedback_dialog.dart';
 import 'package:hr_management/core/widgets/form_fields.dart';
 import 'package:hr_management/core/widgets/inline_banner.dart';
 import 'package:hr_management/core/widgets/info_row.dart';
@@ -36,13 +36,22 @@ class EmployeeFormPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<EmployeeFormCubit, EmployeeFormState>(
       listenWhen: (p, c) => p.submitStatus != c.submitStatus,
-      listener: (context, state) {
+      listener: (context, state) async {
+        final cubit = context.read<EmployeeFormCubit>();
         if (state.submitStatus == SubmissionStatus.success) {
-          showAppSnackBar(
+          // Reached only after the backend confirmed the operation.
+          await AppFeedback.success(
             context,
-            _isEditing ? 'تم تحديث بيانات الموظف' : 'تمت إضافة الموظف',
+            illustration: AppIllustration.success,
           );
+          if (!context.mounted) return;
           context.popOrGo(AppRoutes.employees, true);
+        } else if (state.submitStatus == SubmissionStatus.failure) {
+          await AppFeedback.error(
+            context,
+            failure: state.submitFailure,
+            onRetry: cubit.retrySubmit,
+          );
         }
       },
       builder: (context, state) {
@@ -84,7 +93,6 @@ class EmployeeFormPage extends StatelessWidget {
           initial: state.initial,
           departments: state.departments,
           submitting: state.submitStatus == SubmissionStatus.submitting,
-          submitFailure: state.submitFailure,
           onSubmit: cubit.submit,
         );
     }
@@ -97,13 +105,11 @@ class _EmployeeForm extends StatefulWidget {
     required this.submitting,
     required this.onSubmit,
     this.initial,
-    this.submitFailure,
   });
 
   final Employee? initial;
   final List<Department> departments;
   final bool submitting;
-  final Failure? submitFailure;
   final ValueChanged<EmployeeDraft> onSubmit;
 
   @override
@@ -192,7 +198,6 @@ class _EmployeeFormState extends State<_EmployeeForm> {
   @override
   Widget build(BuildContext context) {
     final departments = _selectableDepartments;
-    final failure = widget.submitFailure;
     final now = DateTime.now();
 
     return Form(
@@ -202,10 +207,6 @@ class _EmployeeFormState extends State<_EmployeeForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (failure != null) ...[
-              InlineBanner.failure(failure),
-              const SizedBox(height: AppSpacing.md),
-            ],
             if (departments.isEmpty) ...[
               const InlineBanner(
                 message: 'لا توجد أقسام متاحة. يمكنك حفظ الموظف دون قسم.',

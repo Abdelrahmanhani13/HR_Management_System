@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:hr_management/core/theme/app_colors.dart';
 import 'package:hr_management/core/theme/app_spacing.dart';
+import 'package:hr_management/core/widgets/app_assets.dart';
 import 'package:hr_management/core/widgets/app_card.dart';
 
 /// Shared frame for the login, forgot-password, and reset-password screens.
+///
+/// Wide screens show the brand scene (which already contains the company logo)
+/// beside the form; narrow screens show the logo above the form on a soft
+/// decorative background.
 class AuthScaffold extends StatelessWidget {
   const AuthScaffold({
     required this.title,
@@ -17,53 +23,60 @@ class AuthScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: Stack(
         children: [
+          // Subtle decorative artwork, faded so it never competes with the form.
           PositionedDirectional(
-            top: -180,
-            end: -120,
-            child: _AmbientGlow(color: scheme.primary),
-          ),
-          PositionedDirectional(
-            bottom: -180,
-            start: -120,
-            child: _AmbientGlow(color: scheme.tertiary),
+            top: 0,
+            end: 0,
+            child: IgnorePointer(
+              child: ShaderMask(
+                blendMode: BlendMode.dstIn,
+                shaderCallback: (rect) => const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.white, Colors.transparent],
+                ).createShader(rect),
+                child: Image.asset(
+                  AppAssets.sectionDotsArc,
+                  width: 560,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
+            ),
           ),
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final wide =
-                    constraints.maxWidth >= 960 && constraints.maxHeight >= 640;
+                    constraints.maxWidth >= 960 && constraints.maxHeight >= 600;
                 final horizontalPadding = constraints.maxWidth < 360
                     ? AppSpacing.sm + 4
                     : AppSpacing.lg;
 
+                final card = _AuthCard(
+                  title: title,
+                  subtitle: subtitle,
+                  child: child,
+                );
+
                 final content = wide
                     ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Expanded(child: _BrandBlock(expanded: true)),
+                          const Expanded(child: _BrandScene()),
                           const SizedBox(width: AppSpacing.xl),
-                          Expanded(
-                            child: _AuthCard(
-                              title: title,
-                              subtitle: subtitle,
-                              child: child,
-                            ),
-                          ),
+                          Expanded(child: card),
                         ],
                       )
                     : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const _BrandBlock(expanded: false),
-                          const SizedBox(height: AppSpacing.xl),
-                          _AuthCard(
-                            title: title,
-                            subtitle: subtitle,
-                            child: child,
-                          ),
+                          const _CompactLogo(),
+                          const SizedBox(height: AppSpacing.lg),
+                          card,
                         ],
                       );
 
@@ -74,7 +87,7 @@ class AuthScaffold extends StatelessWidget {
                       vertical: AppSpacing.lg,
                     ),
                     child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: wide ? 1120 : 480),
+                      constraints: BoxConstraints(maxWidth: wide ? 1160 : 460),
                       child: content,
                     ),
                   ),
@@ -88,71 +101,48 @@ class AuthScaffold extends StatelessWidget {
   }
 }
 
-class _BrandBlock extends StatelessWidget {
-  const _BrandBlock({required this.expanded});
-
-  final bool expanded;
+class _BrandScene extends StatelessWidget {
+  const _BrandScene();
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final markSize = expanded ? 72.0 : 52.0;
-    final mark = Container(
-      width: markSize,
-      height: markSize,
+    return Container(
       decoration: BoxDecoration(
-        color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(
-          expanded ? AppRadius.md : AppRadius.sm,
-        ),
-      ),
-      child: Icon(
-        Icons.badge_outlined,
-        color: scheme.onPrimaryContainer,
-        size: expanded ? 36 : 26,
-      ),
-    );
-    final copy = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'بوابة الموارد البشرية',
-          style: (expanded ? textTheme.headlineSmall : textTheme.titleMedium)
-              ?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          expanded
-              ? 'مساحة عمل آمنة لإدارة الموظفين والحضور من أي جهاز.'
-              : 'مساحة عمل آمنة لفريقك',
-          style: textTheme.bodyMedium?.copyWith(
-            color: scheme.onSurfaceVariant,
-            height: 1.6,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.navy.withValues(alpha: 0.10),
+            blurRadius: 32,
+            offset: const Offset(0, 14),
           ),
-        ),
-      ],
-    );
-
-    if (expanded) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          mark,
-          const SizedBox(height: AppSpacing.lg),
-          copy,
         ],
-      );
-    }
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: AspectRatio(
+        aspectRatio: AppAssets.loginBrandSceneAspect,
+        child: Image.asset(
+          AppAssets.loginBrandScene,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          semanticLabel: 'Pioneers Digital Integration Limited',
+        ),
+      ),
+    );
+  }
+}
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        mark,
-        const SizedBox(width: AppSpacing.md),
-        Flexible(child: copy),
-      ],
+class _CompactLogo extends StatelessWidget {
+  const _CompactLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      AppAssets.logo,
+      width: 230,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      semanticLabel: 'Pioneers Digital Integration Limited',
     );
   }
 }
@@ -179,42 +169,21 @@ class _AuthCard extends StatelessWidget {
           Text(
             title,
             style: textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
               letterSpacing: -0.5,
+              color: AppColors.navy,
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             subtitle,
             style: textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
           child,
         ],
-      ),
-    );
-  }
-}
-
-class _AmbientGlow extends StatelessWidget {
-  const _AmbientGlow({required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Container(
-        width: 360,
-        height: 360,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [color.withValues(alpha: 0.12), color.withValues(alpha: 0)],
-          ),
-        ),
       ),
     );
   }

@@ -38,6 +38,7 @@ class PayrollPage extends StatelessWidget {
                     children: [
                       const PageHeader(
                         title: 'الرواتب',
+                        decorated: true,
                         subtitle: 'تقرير الرواتب والخصومات حسب الحضور',
                       ),
                       const SizedBox(height: AppSpacing.md),

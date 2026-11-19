@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hr_management/core/router/app_routes.dart';
 import 'package:hr_management/core/theme/app_spacing.dart';
 import 'package:hr_management/core/utils/responsive.dart';
+import 'package:hr_management/core/widgets/app_assets.dart';
 import 'package:hr_management/core/widgets/feedback.dart';
 import 'package:hr_management/features/auth/presentation/cubit/session_cubit.dart';
 import 'package:hr_management/features/auth/presentation/widgets/sign_out_action.dart';
@@ -89,9 +90,11 @@ class AppShell extends StatelessWidget {
                     extended: size == ScreenSize.expanded,
                     backgroundColor: scheme.surface,
                     onDestinationSelected: (i) => _select(context, i),
-                    leading: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-                      child: _Brand(),
+                    leading: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.md,
+                      ),
+                      child: _Brand(extended: size == ScreenSize.expanded),
                     ),
                     trailing: Expanded(
                       child: Align(
@@ -138,28 +141,30 @@ class AppShell extends StatelessWidget {
   }
 }
 
+/// Company mark: the full logo on the extended rail, the emblem on the
+/// collapsed one. Aspect ratios are preserved; nothing is stretched.
 class _Brand extends StatelessWidget {
-  const _Brand();
+  const _Brand({required this.extended});
+
+  final bool extended;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: scheme.primary,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        'HR',
-        style: TextStyle(
-          color: scheme.onPrimary,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.5,
-        ),
-      ),
+    if (extended) {
+      return Image.asset(
+        AppAssets.logo,
+        width: 168,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        semanticLabel: 'Pioneers Digital Integration',
+      );
+    }
+    return Image.asset(
+      AppAssets.emblem,
+      width: 44,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      semanticLabel: 'Pioneers',
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hr_management/core/error/failures.dart';
 import 'package:hr_management/core/usecase/usecase.dart';
+import 'package:hr_management/core/utils/formatters.dart';
 import 'package:hr_management/core/utils/view_status.dart';
 import 'package:hr_management/features/attendance/domain/entities/attendance_draft.dart';
 import 'package:hr_management/features/attendance/domain/entities/attendance_query.dart';
@@ -110,6 +111,23 @@ class AttendanceListCubit extends Cubit<AttendanceListState> {
       ),
     );
     return load();
+  }
+
+  /// Shows a single calendar day (any past day up to today).
+  Future<void> setDay(DateTime day) {
+    final d = dateOnly(day);
+    return setRange(d, d);
+  }
+
+  /// Moves a single-day view by [days] (negative = earlier). Does nothing for
+  /// multi-day ranges or when the result would be after today.
+  Future<void> shiftDay(int days) async {
+    final query = state.query;
+    if (!query.isSingleDay) return;
+    final from = query.from;
+    final target = DateTime(from.year, from.month, from.day + days);
+    if (target.isAfter(dateOnly(_now()))) return;
+    await setDay(target);
   }
 
   Future<void> setEmployee(String? employeeId) {

@@ -33,6 +33,9 @@ Future<bool> showConfirmDialog(
   return result ?? false;
 }
 
+/// SnackBar helper. Per the product rules it is used ONLY for login and
+/// logout. Every other success/failure goes through `AppFeedback`
+/// (app_feedback_dialog.dart).
 void showAppSnackBar(
   BuildContext context,
   String message, {
@@ -46,7 +49,9 @@ void showAppSnackBar(
       SnackBar(
         content: Text(
           message,
-          style: TextStyle(color: scheme.onInverseSurface),
+          style: TextStyle(
+            color: isError ? Colors.white : scheme.onInverseSurface,
+          ),
         ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: isError ? scheme.error : scheme.inverseSurface,

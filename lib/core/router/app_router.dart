@@ -107,8 +107,12 @@ GoRouter createRouter(SessionCubit session) {
         routes: [
           GoRoute(
             path: AppRoutes.dashboard,
-            builder: (context, state) => BlocProvider(
-              create: (_) => sl<DashboardCubit>()..load(),
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<DashboardCubit>()..load()),
+                // Supplies the user's name for the welcome banner.
+                BlocProvider(create: (_) => sl<ProfileCubit>()..load()),
+              ],
               child: const DashboardPage(),
             ),
           ),

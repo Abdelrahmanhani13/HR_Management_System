@@ -4,6 +4,7 @@ import 'package:hr_management/core/error/failures.dart';
 import 'package:hr_management/core/theme/app_spacing.dart';
 import 'package:hr_management/core/utils/clock_time.dart';
 import 'package:hr_management/core/utils/formatters.dart';
+import 'package:hr_management/core/widgets/app_feedback_dialog.dart';
 import 'package:hr_management/core/widgets/form_fields.dart';
 import 'package:hr_management/core/widgets/inline_banner.dart';
 import 'package:hr_management/core/widgets/status_chip.dart';
@@ -40,7 +41,6 @@ class _AttendanceEntryDialogState extends State<AttendanceEntryDialog> {
   ClockTime? _checkOut;
   late bool _hasCheckOut;
   bool _submitting = false;
-  Failure? _failure;
 
   @override
   void initState() {
@@ -59,10 +59,7 @@ class _AttendanceEntryDialogState extends State<AttendanceEntryDialog> {
     final checkIn = _checkIn;
     if (employeeId == null || date == null || checkIn == null) return;
 
-    setState(() {
-      _submitting = true;
-      _failure = null;
-    });
+    setState(() => _submitting = true);
 
     final result = await widget.onSave(
       widget.record?.id,
@@ -75,10 +72,10 @@ class _AttendanceEntryDialogState extends State<AttendanceEntryDialog> {
     );
     if (!mounted) return;
     result.fold(
-      (failure) => setState(() {
-        _submitting = false;
-        _failure = failure;
-      }),
+      (failure) {
+        setState(() => _submitting = false);
+        AppFeedback.error(context, failure: failure, onRetry: _submit);
+      },
       (_) => Navigator.of(context).pop(true),
     );
   }
@@ -104,10 +101,6 @@ class _AttendanceEntryDialogState extends State<AttendanceEntryDialog> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: AppSpacing.md),
-                if (_failure case final failure?) ...[
-                  InlineBanner.failure(failure),
-                  const SizedBox(height: AppSpacing.md),
-                ],
                 if (widget.employees.isEmpty)
                   const InlineBanner(
                     message: 'لا توجد بيانات موظفين متاحة للاختيار.',

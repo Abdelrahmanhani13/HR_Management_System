@@ -5,23 +5,29 @@ import 'package:hr_management/core/theme/app_spacing.dart';
 class AppTheme {
   AppTheme._();
 
+  /// The application is light-only; there is intentionally no dark theme.
   static ThemeData light() {
-    return _build(Brightness.light);
-  }
-
-  static ThemeData dark() => _build(Brightness.dark);
-
-  static ThemeData _build(Brightness brightness) {
     final scheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary,
-      brightness: brightness,
-      surface: brightness == Brightness.light
-          ? const Color(0xFFFCFDFC)
-          : const Color(0xFF171E1B),
+      brightness: Brightness.light,
+    ).copyWith(
+      primary: AppColors.primary,
+      onPrimary: Colors.white,
+      primaryContainer: AppColors.primaryContainer,
+      onPrimaryContainer: AppColors.navy,
+      secondary: AppColors.secondary,
+      tertiary: AppColors.teal,
+      surface: AppColors.surface,
+      onSurface: AppColors.textPrimary,
+      onSurfaceVariant: AppColors.textSecondary,
+      outline: AppColors.border,
+      outlineVariant: AppColors.border,
+      surfaceContainerHighest: const Color(0xFFE6EDF5),
+      error: AppColors.danger,
     );
     final base = ThemeData(
       useMaterial3: true,
-      brightness: brightness,
+      brightness: Brightness.light,
       colorScheme: scheme,
     );
     final shape = RoundedRectangleBorder(
@@ -35,9 +41,7 @@ class AppTheme {
         );
 
     return base.copyWith(
-      scaffoldBackgroundColor: brightness == Brightness.light
-          ? AppColors.background
-          : const Color(0xFF111715),
+      scaffoldBackgroundColor: AppColors.background,
       textTheme: base.textTheme.apply(
         bodyColor: scheme.onSurface,
         displayColor: scheme.onSurface,
@@ -117,7 +121,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: scheme.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         titleTextStyle: base.textTheme.titleLarge?.copyWith(
           color: scheme.onSurface,
@@ -136,12 +140,26 @@ class AppTheme {
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
+        indicatorColor: scheme.primaryContainer,
+        iconTheme: WidgetStateProperty.resolveWith(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? AppColors.navy
+                : AppColors.textSecondary,
+          ),
+        ),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: scheme.surface,
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        indicatorColor: scheme.primaryContainer,
+        selectedIconTheme: const IconThemeData(color: AppColors.navy),
+        selectedLabelTextStyle: const TextStyle(
+          color: AppColors.navy,
+          fontWeight: FontWeight.w700,
         ),
         groupAlignment: -0.8,
       ),

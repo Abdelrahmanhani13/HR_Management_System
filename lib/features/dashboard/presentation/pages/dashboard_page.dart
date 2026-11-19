@@ -5,25 +5,28 @@ import 'package:hr_management/core/router/app_routes.dart';
 import 'package:hr_management/core/theme/app_spacing.dart';
 import 'package:hr_management/core/utils/formatters.dart';
 import 'package:hr_management/core/utils/view_status.dart';
+import 'package:hr_management/core/theme/app_colors.dart';
 import 'package:hr_management/core/widgets/adaptive_grid.dart';
-import 'package:hr_management/core/widgets/app_card.dart';
+import 'package:hr_management/core/widgets/app_assets.dart';
+import 'package:hr_management/core/widgets/brand_panel.dart';
 import 'package:hr_management/core/widgets/content_frame.dart';
 import 'package:hr_management/core/widgets/info_row.dart';
-import 'package:hr_management/core/widgets/page_header.dart';
 import 'package:hr_management/core/widgets/stat_card.dart';
 import 'package:hr_management/core/widgets/state_views.dart';
 import 'package:hr_management/core/widgets/status_chip.dart';
-import 'package:hr_management/features/auth/presentation/cubit/session_cubit.dart';
 import 'package:hr_management/features/dashboard/domain/entities/dashboard_summary.dart';
 import 'package:hr_management/features/dashboard/presentation/cubit/dashboard_cubit.dart';
+import 'package:hr_management/features/profile/presentation/cubit/profile_cubit.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final email = context.select<SessionCubit, String?>(
-      (c) => c.state.session?.email,
+    // Shows the user's name (never the email). Until the profile has loaded,
+    // or when it has no name, only the date is shown.
+    final name = context.select<ProfileCubit, String?>(
+      (c) => c.state.profile?.displayName,
     );
     return ContentFrame(
       child: RefreshIndicator(
@@ -31,11 +34,10 @@ class DashboardPage extends StatelessWidget {
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
-            PageHeader(
-              title: 'الرئيسية',
-              subtitle: email == null
+            _WelcomeHero(
+              subtitle: name == null
                   ? AppFormat.dateLong(DateTime.now())
-                  : '${AppFormat.dateLong(DateTime.now())} · $email',
+                  : '${AppFormat.dateLong(DateTime.now())} · $name',
             ),
             const SizedBox(height: AppSpacing.lg),
             BlocBuilder<DashboardCubit, DashboardState>(
@@ -57,6 +59,50 @@ class DashboardPage extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             const _QuickActions(),
             const SizedBox(height: AppSpacing.xl),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Welcome banner on the dark brand artwork. White text sits on the navy
+/// side of the gradient so it stays readable.
+class _WelcomeHero extends StatelessWidget {
+  const _WelcomeHero({required this.subtitle});
+
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return BrandPanel(
+      image: AppAssets.heroDarkWaves,
+      dark: true,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.xl,
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'مرحبًا بك في بيونيرز',
+              style: textTheme.headlineMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              subtitle,
+              style: textTheme.bodyMedium?.copyWith(
+                color: Colors.white.withValues(alpha: 0.86),
+              ),
+            ),
           ],
         ),
       ),
@@ -154,7 +200,10 @@ class _AttendanceBar extends StatelessWidget {
     final countLabel =
         '${AppFormat.number(summary.checkedInToday)} من أصل '
         '${AppFormat.number(active)} موظف نشط';
-    return AppCard(
+    return BrandPanel(
+      image: AppAssets.sectionDiagonalBars,
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -201,7 +250,7 @@ class _AttendanceBar extends StatelessWidget {
               value: ratio,
               minHeight: 8,
               backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              color: Theme.of(context).colorScheme.primary,
+              color: AppColors.teal,
             ),
           ),
         ],

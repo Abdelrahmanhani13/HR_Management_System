@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hr_management/core/theme/app_colors.dart';
 import 'package:hr_management/core/theme/app_spacing.dart';
 
 /// Flat, bordered surface used for every grouped block of content.
@@ -27,10 +28,8 @@ class AppCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: scheme.shadow.withValues(
-              alpha: scheme.brightness == Brightness.light ? 0.06 : 0.2,
-            ),
-            blurRadius: 20,
+            color: AppColors.navy.withValues(alpha: 0.06),
+            blurRadius: 24,
             offset: const Offset(0, 8),
           ),
         ],

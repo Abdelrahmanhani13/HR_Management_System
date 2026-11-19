@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_management/core/theme/app_spacing.dart';
+import 'package:hr_management/core/widgets/app_assets.dart';
+import 'package:hr_management/core/widgets/brand_panel.dart';
 
 class PageHeader extends StatelessWidget {
   const PageHeader({
@@ -8,12 +10,16 @@ class PageHeader extends StatelessWidget {
     this.subtitle,
     this.actions = const [],
     this.leading,
+    this.decorated = false,
   });
 
   final String title;
   final String? subtitle;
   final List<Widget> actions;
   final Widget? leading;
+
+  /// Places the header on the soft brand artwork (list / overview screens).
+  final bool decorated;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +46,7 @@ class PageHeader extends StatelessWidget {
       ],
     );
 
-    return LayoutBuilder(
+    final content = LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 600) {
           return Column(
@@ -85,6 +91,17 @@ class PageHeader extends StatelessWidget {
           ],
         );
       },
+    );
+
+    if (!decorated) return content;
+    return BrandPanel(
+      image: AppAssets.headerLightArcs,
+      radius: AppRadius.md,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.md,
+      ),
+      child: content,
     );
   }
 }

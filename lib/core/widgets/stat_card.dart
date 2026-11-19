@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hr_management/core/theme/app_colors.dart';
 import 'package:hr_management/core/theme/app_spacing.dart';
 import 'package:hr_management/core/widgets/app_card.dart';
 import 'package:hr_management/core/widgets/status_chip.dart';
@@ -41,8 +42,9 @@ class StatCard extends StatelessWidget {
                 Text(
                   value,
                   style: textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
                     letterSpacing: -0.5,
+                    color: AppColors.navy,
                   ),
                 ),
                 Text(

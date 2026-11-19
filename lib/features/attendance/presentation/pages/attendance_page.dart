@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hr_management/core/widgets/feedback.dart';
+import 'package:hr_management/core/widgets/app_assets.dart';
+import 'package:hr_management/core/widgets/app_feedback_dialog.dart';
 import 'package:hr_management/core/theme/app_spacing.dart';
 import 'package:hr_management/core/utils/formatters.dart';
 import 'package:hr_management/core/utils/view_status.dart';
@@ -32,6 +33,7 @@ class AttendancePage extends StatelessWidget {
                 children: [
                   PageHeader(
                     title: 'الحضور والانصراف',
+                    decorated: true,
                     subtitle: AppFormat.dateLong(DateTime.now()),
                     actions: [
                       FilledButton.icon(
@@ -84,9 +86,10 @@ Future<void> _openEntry(
       }
     }
     if (!context.mounted) return;
-    showAppSnackBar(
+    await AppFeedback.success(
       context,
-      record == null ? 'تم تسجيل الحضور بنجاح.' : 'تم تحديث سجل الحضور.',
+      illustration: AppIllustration.successAttendance,
+      title: record == null ? 'تم تسجيل الحضور' : 'تم تحديث سجل الحضور',
     );
   }
 }
@@ -112,12 +115,8 @@ class _RecordsSliver extends StatelessWidget {
             return const SliverToBoxAdapter(child: LoadingView());
           }
           return SliverToBoxAdapter(
-            child: EmptyView(
-              icon: Icons.event_busy_outlined,
-              title: 'لا توجد سجلات حضور',
-              message:
-                  'لا توجد سجلات خلال هذه الفترة. '
-                  'جرّب فترة أو موظفًا آخر.',
+            child: IllustratedEmptyView(
+              illustration: AppIllustration.emptyAttendance,
               action: cubit.hasCustomFilters
                   ? OutlinedButton(
                       onPressed: cubit.resetFilters,

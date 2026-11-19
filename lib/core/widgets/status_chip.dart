@@ -8,33 +8,19 @@ extension StatusToneColors on StatusTone {
   Color foreground(BuildContext context) {
     switch (this) {
       case StatusTone.success:
-        return Theme.of(context).brightness == Brightness.light
-            ? AppColors.success
-            : const Color(0xFF9BCDAA);
+        return AppColors.success;
       case StatusTone.warning:
-        return Theme.of(context).brightness == Brightness.light
-            ? AppColors.warning
-            : const Color(0xFFE2C18A);
+        return AppColors.warning;
       case StatusTone.danger:
-        return Theme.of(context).brightness == Brightness.light
-            ? AppColors.danger
-            : const Color(0xFFE5A19A);
+        return AppColors.danger;
       case StatusTone.info:
-        return Theme.of(context).brightness == Brightness.light
-            ? AppColors.info
-            : const Color(0xFFA8CBDC);
+        return AppColors.info;
       case StatusTone.neutral:
-        return Theme.of(context).colorScheme.onSurfaceVariant;
+        return AppColors.neutral;
     }
   }
 
   Color background(BuildContext context) {
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return Color.alphaBlend(
-        foreground(context).withValues(alpha: 0.16),
-        Theme.of(context).colorScheme.surface,
-      );
-    }
     switch (this) {
       case StatusTone.success:
         return AppColors.successBg;

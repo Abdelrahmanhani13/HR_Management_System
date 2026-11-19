@@ -29,14 +29,7 @@ class InlineBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final isDark = scheme.brightness == Brightness.dark;
-    final background = isDark
-        ? Color.alphaBlend(
-            tone.foreground(context).withValues(alpha: 0.16),
-            scheme.surface,
-          )
-        : tone.background(context);
+    final background = tone.background(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.md),

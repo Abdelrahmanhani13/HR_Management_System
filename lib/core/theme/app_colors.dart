@@ -1,30 +1,41 @@
 import 'package:flutter/painting.dart';
 
-/// Brand seed and semantic light-palette colors.
+/// Pioneers brand palette (derived from the company logo) and the semantic
+/// colors used across the light theme.
 class AppColors {
   AppColors._();
 
-  static const Color primary = Color(0xFF41685F);
-  static const Color primaryContainer = Color(0xFFDDEBE6);
-  static const Color accent = Color(0xFF917455);
+  // Brand
+  static const Color navy = Color(0xFF173B5E);
+  static const Color primary = Color(0xFF2476B9);
+  static const Color secondary = Color(0xFF4B9BD3);
+  static const Color cyan = Color(0xFF55C5E8);
+  static const Color teal = Color(0xFF20B6B2);
+  static const Color primaryContainer = Color(0xFFDCEBF8);
+  static const Color accent = teal;
 
-  static const Color background = Color(0xFFF5F7F6);
+  // Surfaces
+  static const Color background = Color(0xFFF5F8FC);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color border = Color(0xFFE2E8E5);
+  static const Color border = Color(0xFFE5EAF1);
 
-  static const Color ink = Color(0xFF1C2925);
+  // Text
+  static const Color ink = Color(0xFF1E293B);
   static const Color textPrimary = ink;
-  static const Color textSecondary = Color(0xFF65726D);
-  static const Color textMuted = Color(0xFF8C9893);
+  static const Color textSecondary = Color(0xFF586579);
+  static const Color textMuted = Color(0xFF94A3B8);
 
-  static const Color success = Color(0xFF3F795D);
-  static const Color successBg = Color(0xFFE5F0E9);
-  static const Color warning = Color(0xFF8B6B35);
-  static const Color warningBg = Color(0xFFF3EDE1);
-  static const Color danger = Color(0xFFAA5148);
-  static const Color dangerBg = Color(0xFFF5E8E6);
-  static const Color info = Color(0xFF4E7184);
-  static const Color infoBg = Color(0xFFE8EFF2);
-  static const Color neutral = Color(0xFF64726C);
-  static const Color neutralBg = Color(0xFFEAEFEC);
+  // Semantic. Foreground colours are tuned to reach >= 4.5:1 contrast on
+  // their own *Bg colour (and on white), so text/icons in banners, chips and
+  // stat cards stay readable.
+  static const Color success = Color(0xFF0B6F69);
+  static const Color successBg = Color(0xFFE2F5F3);
+  static const Color warning = Color(0xFF875A0E);
+  static const Color warningBg = Color(0xFFFDF1DC);
+  static const Color danger = Color(0xFFB02F22);
+  static const Color dangerBg = Color(0xFFFCE9E6);
+  static const Color info = Color(0xFF1B5E96);
+  static const Color infoBg = Color(0xFFE6F1FA);
+  static const Color neutral = Color(0xFF525F73);
+  static const Color neutralBg = Color(0xFFEDF1F6);
 }

@@ -79,6 +79,7 @@ class EmployeeFormCubit extends Cubit<EmployeeFormState> {
   final UpdateEmployee _updateEmployee;
 
   String? _employeeId;
+  EmployeeDraft? _lastDraft;
 
   bool get isEditing => _employeeId != null;
 
@@ -129,8 +130,15 @@ class EmployeeFormCubit extends Cubit<EmployeeFormState> {
     );
   }
 
+  /// Re-sends the last submitted draft (used by the failure dialog's Retry).
+  Future<void> retrySubmit() async {
+    final draft = _lastDraft;
+    if (draft != null) await submit(draft);
+  }
+
   Future<void> submit(EmployeeDraft draft) async {
     if (state.submitStatus == SubmissionStatus.submitting) return;
+    _lastDraft = draft;
     emit(
       state.copyWith(
         submitStatus: SubmissionStatus.submitting,

@@ -6,6 +6,7 @@ import 'package:hr_management/core/theme/app_spacing.dart';
 import 'package:hr_management/core/utils/formatters.dart';
 import 'package:hr_management/core/utils/responsive.dart';
 import 'package:hr_management/core/utils/view_status.dart';
+import 'package:hr_management/core/widgets/app_assets.dart';
 import 'package:hr_management/core/widgets/content_frame.dart';
 import 'package:hr_management/core/widgets/page_header.dart';
 import 'package:hr_management/core/widgets/state_views.dart';
@@ -43,6 +44,7 @@ class EmployeesPage extends StatelessWidget {
               final count = state.employees.length;
               return PageHeader(
                 title: 'الموظفون',
+                decorated: true,
                 subtitle: state.status == ViewStatus.success
                     ? '${AppFormat.number(count)} موظف'
                     : null,
@@ -106,19 +108,15 @@ class _EmployeesBody extends StatelessWidget {
         return const LoadingView();
       }
       return state.query.hasFilters
-          ? EmptyView(
-              icon: Icons.search_off,
-              title: 'لا توجد نتائج مطابقة',
-              message: 'جرّب البحث بكلمات مختلفة أو امسح عوامل التصفية.',
+          ? IllustratedEmptyView(
+              illustration: AppIllustration.emptySearch,
               action: OutlinedButton(
                 onPressed: cubit.clearFilters,
                 child: const Text('مسح عوامل التصفية'),
               ),
             )
-          : EmptyView(
-              icon: Icons.groups_outlined,
-              title: 'لا يوجد موظفون بعد',
-              message: 'أضف أول موظف لبدء استخدام النظام.',
+          : IllustratedEmptyView(
+              illustration: AppIllustration.emptyEmployees,
               action: FilledButton.icon(
                 onPressed: onAdd,
                 icon: const Icon(Icons.person_add_alt_1_outlined),

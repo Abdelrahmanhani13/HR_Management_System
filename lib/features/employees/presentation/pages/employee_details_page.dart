@@ -9,6 +9,8 @@ import 'package:hr_management/core/utils/view_status.dart';
 import 'package:hr_management/core/widgets/app_card.dart';
 import 'package:hr_management/core/widgets/avatar_initials.dart';
 import 'package:hr_management/core/widgets/content_frame.dart';
+import 'package:hr_management/core/widgets/app_assets.dart';
+import 'package:hr_management/core/widgets/app_feedback_dialog.dart';
 import 'package:hr_management/core/widgets/feedback.dart';
 import 'package:hr_management/core/widgets/info_row.dart';
 import 'package:hr_management/core/widgets/page_header.dart';
@@ -51,17 +53,17 @@ class EmployeeDetailsPage extends StatelessWidget {
     return BlocConsumer<EmployeeDetailsCubit, EmployeeDetailsState>(
       listenWhen: (p, c) => p.actionStatus != c.actionStatus,
       listener: (context, state) {
+        final cubit = context.read<EmployeeDetailsCubit>();
         if (state.actionStatus == SubmissionStatus.success) {
-          final active = state.employee?.isActive ?? false;
-          showAppSnackBar(
-            context,
-            active ? 'تمت إعادة تفعيل الموظف' : 'تم إيقاف الموظف',
-          );
+          AppFeedback.success(context, illustration: AppIllustration.success);
         } else if (state.actionStatus == SubmissionStatus.failure) {
-          showAppSnackBar(
+          // On failure the employee is unchanged, so the retry target is the
+          // opposite of the currently stored status.
+          final target = !(state.employee?.isActive ?? true);
+          AppFeedback.error(
             context,
-            state.actionFailure?.message ?? 'تعذر تحديث بيانات الموظف.',
-            isError: true,
+            failure: state.actionFailure,
+            onRetry: () => cubit.setActive(isActive: target),
           );
         }
       },

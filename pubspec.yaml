@@ -31,3 +31,6 @@ flutter:
   uses-material-design: true
   assets:
     - .env
+    - assets/processed/illustrations/
+    - assets/processed/backgrounds/
+    - assets/processed/logo/

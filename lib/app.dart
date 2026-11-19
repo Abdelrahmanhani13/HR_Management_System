@@ -46,8 +46,7 @@ class _HrAppState extends State<HrApp> {
           GlobalCupertinoLocalizations.delegate,
         ],
         theme: AppTheme.light(),
-        darkTheme: AppTheme.dark(),
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.light,
         routerConfig: _router,
       ),
     );
